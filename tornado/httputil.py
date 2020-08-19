@@ -25,7 +25,7 @@ import copy
 import datetime
 import email.utils
 from functools import lru_cache
-from http.client import responses
+from http.client import responses  # build-in package
 import http.cookies
 import re
 from ssl import SSLError
@@ -140,6 +140,9 @@ class HTTPHeaders(collections.abc.MutableMapping):
             self._dict[norm_name] = (
                 native_str(self[norm_name]) + "," + native_str(value)
             )
+            """
+            self._dict[norm_name] = ",".join([native_str(self[norm_name]), native_str(value)])  # 拼接字符串的时候，带不带括号，返回的结果都一样
+            """
             self._as_list[norm_name].append(value)
         else:
             self[norm_name] = value
