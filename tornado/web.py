@@ -311,6 +311,9 @@ class RequestHandler(object):
         may not be called promptly after the end user closes their
         connection.
         """
+        """
+        self.__class__ 指向当前实例的类
+        """
         if _has_stream_request_body(self.__class__):
             if not self.request._body_future.done():
                 self.request._body_future.set_exception(iostream.StreamClosedError())
@@ -325,7 +328,7 @@ class RequestHandler(object):
                 "Date": httputil.format_timestamp(time.time()),
             }
         )
-        self.set_default_headers()
+        self.set_default_headers()  # 如果该方法被子类重写，可能有用
         self._write_buffer = []  # type: List[bytes]
         self._status_code = 200
         self._reason = httputil.responses[200]
@@ -353,11 +356,15 @@ class RequestHandler(object):
            No longer validates that the response code is in
            `http.client.responses`.
         """
-        self._status_code = status_code
+        self._status_code = status_code  # 不再验证 status_code 是否为有效的响应状态码 ?
         if reason is not None:
+            """
+            因为 reason 类型为可选的 str，默认值为 None，可以使用 if reason 代替。
+            Optional[str] 等同于 Union[str, None]
+            """
             self._reason = escape.native_str(reason)
         else:
-            self._reason = httputil.responses.get(status_code, "Unknown")
+            self._reason = httputil.responses.get(status_code, "Unknown")  # responses, 一个字典，把 HTTP 1.1 状态码映射到W3C中的名字。参见标准库 http.client.responses
 
     def get_status(self) -> int:
         """Returns the status code for our response."""
@@ -387,10 +394,10 @@ class RequestHandler(object):
         Note that this method does not apply to multi-valued headers
         set by `add_header`.
         """
-        if name in self._headers:
+        if name in self._headers:  # 使用 dict.pop(key[, default]) 可能更简洁: self._headers.pop(name, None)。至于返回值类型注释方面，可以明确函数返回 None，尽管 Python 函数在没有明确地指定返回值的时候返回的是 None
             del self._headers[name]
 
-    _INVALID_HEADER_CHAR_RE = re.compile(r"[\x00-\x1f]")
+    _INVALID_HEADER_CHAR_RE = re.compile(r"[\x00-\x1f]")  # ASCII 字符编码中 0x00 ~ 0x1f, 0x7f 对应的是控制字符
 
     def _convert_header_value(self, value: _HeaderTypes) -> str:
         # Convert the input value to a str. This type check is a bit
@@ -2057,7 +2064,7 @@ class Application(ReversibleRouter):
         self._load_ui_methods(settings.get("ui_methods", {}))
         if self.settings.get("static_path"):
             path = self.settings["static_path"]
-            handlers = list(handlers or [])
+            handlers = list(handlers or [])  # 这是什么高级用法 ？
             static_url_prefix = settings.get("static_url_prefix", "/static/")
             static_handler_class = settings.get(
                 "static_handler_class", StaticFileHandler
@@ -2072,6 +2079,7 @@ class Application(ReversibleRouter):
                 handlers.insert(0, (pattern, static_handler_class, static_handler_args))
 
         if self.settings.get("debug"):
+            # debug 模式下: 自动重载、不缓存文件、出错时打印堆栈
             self.settings.setdefault("autoreload", True)
             self.settings.setdefault("compiled_template_cache", False)
             self.settings.setdefault("static_hash_cache", False)
@@ -2083,7 +2091,7 @@ class Application(ReversibleRouter):
         )
 
         # Automatically reload modified modules
-        if self.settings.get("autoreload"):
+        if self.settings.get("autoreload"):  # 参见 setdefault
             from tornado import autoreload
 
             autoreload.start()
