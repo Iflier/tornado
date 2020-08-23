@@ -265,7 +265,7 @@ class OptionParser(object):
                 "Option %r already defined in %s"
                 % (normalized, self._options[normalized].file_name)
             )
-        frame = sys._getframe(0)
+        frame = sys._getframe(0)  # 返回一个来自于调用栈的 frame 对象
         options_file = frame.f_code.co_filename
 
         # Can be called directly, or through top level define() fn, in which

@@ -266,7 +266,7 @@ class IOLoop(Configurable):
                 return None
             raise
         try:
-            return IOLoop._ioloop_for_asyncio[loop]
+            return IOLoop._ioloop_for_asyncio[loop]  # 故意让它引发异常，然后异常被捕获，返回 AsyncIOMainLoop 的实例
         except KeyError:
             if instance:
                 from tornado.platform.asyncio import AsyncIOMainLoop
@@ -274,7 +274,7 @@ class IOLoop(Configurable):
                 current = AsyncIOMainLoop(make_current=True)  # type: Optional[IOLoop]
             else:
                 current = None
-        return current
+        return current  # 返回一个事件环
 
     def make_current(self) -> None:
         """Makes this the `IOLoop` for the current thread.

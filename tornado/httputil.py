@@ -101,6 +101,8 @@ class HTTPHeaders(collections.abc.MutableMapping):
     Set-Cookie: A=B
     Set-Cookie: C=D
     """
+    """在伪造请求头的时候，这是一个很好的轮子，但是，是否有必要特殊处理 "DNT" 这个键值对。有些网站不在乎它的大小写，例如 cn.bing.com
+    """
 
     @typing.overload
     def __init__(self, __arg: Mapping[str, List[str]]) -> None:

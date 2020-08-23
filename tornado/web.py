@@ -1966,7 +1966,7 @@ class Application(ReversibleRouter):
         ])
         http_server = httpserver.HTTPServer(application)
         http_server.listen(8080)
-        ioloop.IOLoop.current().start()
+        ioloop.IOLoop.current().start()  # BaseAsyncIOLoop 的 start() 方法
 
     The constructor for this class takes in a list of `~.routing.Rule`
     objects or tuples of values corresponding to the arguments of
@@ -2116,7 +2116,7 @@ class Application(ReversibleRouter):
            Now returns the `.HTTPServer` object.
         """
         server = HTTPServer(self, **kwargs)
-        server.listen(port, address)
+        server.listen(port, address)  # 这里的 listen 方法来自于 HTTPServer 继承的 TCPServer 类，该方法可以调用多次，用于绑定到不同的端口
         return server
 
     def add_handlers(self, host_pattern: str, host_handlers: _RuleList) -> None:

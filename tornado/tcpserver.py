@@ -161,6 +161,7 @@ class TCPServer(object):
         control over the initialization of a multi-process server.
         """
         for sock in sockets:
+            # socket.socket 对象的 fileno() 方法返回一个小的整数
             self._sockets[sock.fileno()] = sock
             self._handlers[sock.fileno()] = add_accept_handler(
                 sock, self._handle_connection

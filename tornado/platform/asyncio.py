@@ -221,7 +221,7 @@ class AsyncIOMainLoop(BaseAsyncIOLoop):
     """
 
     def initialize(self, **kwargs: Any) -> None:  # type: ignore
-        super(AsyncIOMainLoop, self).initialize(asyncio.get_event_loop(), **kwargs)
+        super(AsyncIOMainLoop, self).initialize(asyncio.get_event_loop(), **kwargs)  # 调用 BaseAsyncIOLoop 的 initialize() 方法, self.asyncio_loop = asyncio.get_event_loop()
 
     def make_current(self) -> None:
         # AsyncIOMainLoop already refers to the current asyncio loop so
