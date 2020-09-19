@@ -243,8 +243,8 @@ def add_accept_handler(
     .. versionchanged:: 5.0
        A callable is returned (``None`` was returned before).
     """
-    io_loop = IOLoop.current()  # 一个事件环对象
-    removed = [False]
+    io_loop = IOLoop.current()  # 一个事件环对象。asyncio.get_event_loop() 返回的对象
+    removed = [False]  # 标记回调尚未被移除。为什么要用 list 类型来容纳这么一个 bool 值 ?
 
     def accept_handler(fd: socket.socket, events: int) -> None:
         # More connections may come in while we're handling callbacks;

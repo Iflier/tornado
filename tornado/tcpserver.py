@@ -169,7 +169,7 @@ class TCPServer(object):
 
     def add_socket(self, socket: socket.socket) -> None:
         """Singular version of `add_sockets`.  Takes a single socket object."""
-        self.add_sockets([socket])
+        self.add_sockets([socket])  # 参数类型为 list
 
     def bind(
         self,
