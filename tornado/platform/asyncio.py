@@ -62,7 +62,7 @@ class BaseAsyncIOLoop(IOLoop):
         # WeakKeyDictionary.
         for loop in list(IOLoop._ioloop_for_asyncio):
             if loop.is_closed():
-                del IOLoop._ioloop_for_asyncio[loop]
+                del IOLoop._ioloop_for_asyncio[loop]  # pop
         IOLoop._ioloop_for_asyncio[asyncio_loop] = self
 
         self._thread_identity = 0
@@ -97,7 +97,7 @@ class BaseAsyncIOLoop(IOLoop):
             raise ValueError("fd %s added twice" % fd)
         self.handlers[fd] = (fileobj, handler)
         if events & IOLoop.READ:
-            self.asyncio_loop.add_reader(fd, self._handle_events, fd, IOLoop.READ)
+            self.asyncio_loop.add_reader(fd, self._handle_events, fd, IOLoop.READ)  # Event Loop 实例的方法
             self.readers.add(fd)
         if events & IOLoop.WRITE:
             self.asyncio_loop.add_writer(fd, self._handle_events, fd, IOLoop.WRITE)
@@ -140,13 +140,13 @@ class BaseAsyncIOLoop(IOLoop):
 
     def start(self) -> None:
         try:
-            old_loop = asyncio.get_event_loop()
+            old_loop = asyncio.get_event_loop()  # 返回存在的或者创建新的 event loop
         except (RuntimeError, AssertionError):
             old_loop = None  # type: ignore
         try:
             self._setup_logging()
-            asyncio.set_event_loop(self.asyncio_loop)
-            self.asyncio_loop.run_forever()
+            asyncio.set_event_loop(self.asyncio_loop)  # 设置为当前 OS 线程的 event loop
+            self.asyncio_loop.run_forever()  # 除非调用了 stop() 方法，否则不会到达 finally
         finally:
             asyncio.set_event_loop(old_loop)
 
@@ -221,11 +221,7 @@ class AsyncIOMainLoop(BaseAsyncIOLoop):
     """
 
     def initialize(self, **kwargs: Any) -> None:  # type: ignore
-<<<<<<< HEAD
-        super(AsyncIOMainLoop, self).initialize(asyncio.get_event_loop(), **kwargs)  # 调用 BaseAsyncIOLoop 的 initialize() 方法, self.asyncio_loop = asyncio.get_event_loop()
-=======
-        super().initialize(asyncio.get_event_loop(), **kwargs)
->>>>>>> master
+        super().initialize(asyncio.get_event_loop(), **kwargs)  # 调用 BaseAsyncIOLoop 的 initialize() 方法, self.asyncio_loop = asyncio.get_event_loop()
 
     def make_current(self) -> None:
         # AsyncIOMainLoop already refers to the current asyncio loop so
@@ -272,7 +268,7 @@ class AsyncIOLoop(BaseAsyncIOLoop):
     def make_current(self) -> None:
         if not self.is_current:
             try:
-                self.old_asyncio = asyncio.get_event_loop()
+                self.old_asyncio = asyncio.get_event_loop()  # 创建或者返回已有的 Event Loop
             except (RuntimeError, AssertionError):
                 self.old_asyncio = None  # type: ignore
             self.is_current = True

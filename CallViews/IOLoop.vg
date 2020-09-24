@@ -1,0 +1,36 @@
+// IOLoop 类调用关系图
+digraph {
+	object [label=object]
+	Configurable [label="util::Configurable"]
+	object -> Configurable
+	Configurable -> IOLoop
+	IOLoop [label="ioloop::IOLoop"]
+	_ioloop_for_asyncio [label="instance attribute
+_ioloop_for_asyncio
+type=dict"]
+	instance [label="instance
+return IOLoop.current()"]
+	current [label="staticmethod:current
+return: An asyncio.get_event_loop object"]
+	IOLoop -> _ioloop_for_asyncio
+	IOLoop -> current
+	IOLoop -> instance
+	IOLoop -> BaseAsyncIOLoop
+	BaseAsyncIOLoop [label="platform::asyncio::BaseAsyncIOLoop"]
+	start [label="start
+call self.asyncio_loop.run_forever()"]
+	stop [label="stop
+call self.asyncio_loop.stop()"]
+	close [label="close
+remove self.asyncio_loop from _ioloop_for_asyncio
+self.asyncio_loop.close()"]
+	AsyncIOLoop [label="platform::asyncio::AsyncIOLoop"]
+	make_current [label="make_current
+call asyncio.set_event_loop(self.asyncio_loop)
+self.is_current = True"]
+	AsyncIOLoop -> make_current
+	BaseAsyncIOLoop -> AsyncIOLoop
+	BaseAsyncIOLoop -> start
+	BaseAsyncIOLoop -> stop
+	BaseAsyncIOLoop -> close
+}

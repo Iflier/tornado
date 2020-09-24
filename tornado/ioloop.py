@@ -266,7 +266,7 @@ class IOLoop(Configurable):
                 return None
             raise
         try:
-            return IOLoop._ioloop_for_asyncio[loop]  # 故意让它引发异常，然后异常被捕获，返回 AsyncIOMainLoop 的实例
+            return IOLoop._ioloop_for_asyncio[loop]  # 至少第一次调用的时候，这个字典里还没有这个key。故意让它引发异常，然后异常被捕获，返回 AsyncIOMainLoop 的实例
         except KeyError:
             if instance:
                 from tornado.platform.asyncio import AsyncIOMainLoop
@@ -925,7 +925,7 @@ class PeriodicCallback(object):
             # schedule.
             self._next_timeout += (
                 math.floor((current_time - self._next_timeout) / callback_time_sec) + 1
-            ) * callback_time_sec
+            ) * callback_time_sec  # 原调用时间间隔的倍数
         else:
             # If the clock moved backwards, ensure we advance the next
             # timeout instead of recomputing the same value again.
