@@ -2,8 +2,12 @@
 digraph {
 	object [label=object]
 	Configurable [label="util::Configurable"]
+	BaseAsyncIOLoop [label="platform::asyncio::BaseAsyncIOLoop"]
+	AsyncIOLoop [label="platform::asyncio::AsyncIOLoop"]
 	object -> Configurable
 	Configurable -> IOLoop
+	IOLoop -> BaseAsyncIOLoop
+	BaseAsyncIOLoop -> AsyncIOLoop
 	IOLoop [label="ioloop::IOLoop"]
 	_ioloop_for_asyncio [label="instance attribute
 _ioloop_for_asyncio
@@ -12,11 +16,15 @@ type=dict"]
 return IOLoop.current()"]
 	current [label="staticmethod:current
 return: An asyncio.get_event_loop object"]
+	add_future [label=add_future]
+	add_done_callback [label="Call Future's add_done_callback"]
+	future_add_done_callback [label="concurrent::future_add_done_callback"]
 	IOLoop -> _ioloop_for_asyncio
 	IOLoop -> current
 	IOLoop -> instance
-	IOLoop -> BaseAsyncIOLoop
-	BaseAsyncIOLoop [label="platform::asyncio::BaseAsyncIOLoop"]
+	IOLoop -> add_future
+	add_future -> add_done_callback [label="if is a Future instance"]
+	add_future -> future_add_done_callback [label="if is not a Future instance"]
 	start [label="start
 call self.asyncio_loop.run_forever()"]
 	stop [label="stop
@@ -24,13 +32,14 @@ call self.asyncio_loop.stop()"]
 	close [label="close
 remove self.asyncio_loop from _ioloop_for_asyncio
 self.asyncio_loop.close()"]
-	AsyncIOLoop [label="platform::asyncio::AsyncIOLoop"]
+	add_handler [label="add_handler
+Call self.asyncio_loop.add_reader / add_writer"]
 	make_current [label="make_current
 call asyncio.set_event_loop(self.asyncio_loop)
 self.is_current = True"]
-	AsyncIOLoop -> make_current
-	BaseAsyncIOLoop -> AsyncIOLoop
 	BaseAsyncIOLoop -> start
 	BaseAsyncIOLoop -> stop
 	BaseAsyncIOLoop -> close
+	BaseAsyncIOLoop -> add_handler
+	AsyncIOLoop -> make_current
 }

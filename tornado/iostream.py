@@ -1137,7 +1137,7 @@ class IOStream(BaseIOStream):
 
     def read_from_fd(self, buf: Union[bytearray, memoryview]) -> Optional[int]:
         try:
-            return self.socket.recv_into(buf, len(buf))
+            return self.socket.recv_into(buf, len(buf))  # If nbytes is not specified (or 0), receive up to the size available in the given buffer
         except BlockingIOError:
             return None
         finally:
@@ -1216,7 +1216,7 @@ class IOStream(BaseIOStream):
                 gen_log.warning("Connect error on fd %s: %s", self.socket.fileno(), e)
             self.close(exc_info=e)
             return future
-        self._add_io_state(self.io_loop.WRITE)
+        super()._add_io_state(self.io_loop.WRITE)
         return future
 
     def start_tls(

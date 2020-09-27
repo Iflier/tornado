@@ -83,7 +83,7 @@ def bind_sockets(
     in the list. If your platform doesn't support this option ValueError will
     be raised.
     """
-    if reuse_port and not hasattr(socket, "SO_REUSEPORT"):
+    if reuse_port and not hasattr(socket, "SO_REUSEPORT"):  # 例如， Windows
         raise ValueError("the platform doesn't support SO_REUSEPORT")
 
     sockets = []
@@ -131,7 +131,7 @@ def bind_sockets(
             raise
         if os.name != "nt":
             try:
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Windows 系统不支持 socket.SO_REUSEPORT 选项
             except socket.error as e:
                 if errno_from_exception(e) != errno.ENOPROTOOPT:
                     # Hurd doesn't support SO_REUSEADDR.

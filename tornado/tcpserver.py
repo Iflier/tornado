@@ -54,7 +54,7 @@ class TCPServer(object):
                   except StreamClosedError:
                       break
 
-    To make this server serve SSL traffic, send the ``ssl_options`` keyword
+    To make this server serve SSL traffic, set the ``ssl_options`` keyword
     argument with an `ssl.SSLContext` object. For compatibility with older
     versions of Python ``ssl_options`` may also be a dictionary of keyword
     arguments for the `ssl.wrap_socket` method.::
